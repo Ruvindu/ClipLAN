@@ -647,15 +647,19 @@ public class ClipLANDemo extends javax.swing.JFrame {
                     Integer.parseInt(server_port.getText());
                     server.start();
                 } catch (Exception e) {
-                    server_errors.setText("<html>Exception ocured : " + e.getMessage() + "</html>");
+                    server_errors.setText("<html>Exception ocured : " + e.getMessage().substring(0) + "</html>");
                 }
 
             } else {
                 server_errors.setText("<html>Invalid port number.</html>");
             }
         } else {
-
-            System.exit(0);
+            int int_c = Integer.parseInt(connected_clients_label.getText());
+            if(int_c==0){
+                System.exit(0);
+            }else{
+                server_errors.setText("<html>"+int_c+" client(s) are connected. Disconnect all clients before shutdown the server.</html>");
+            }
         }
     }//GEN-LAST:event_start_toggleActionPerformed
 
@@ -917,7 +921,7 @@ public class ClipLANDemo extends javax.swing.JFrame {
                         //main_window.setAlwaysOnTop(true);
                     }
                 });
-                
+
                 //hide window if clickd close button
                 main_window.addWindowListener(new WindowAdapter() {
                     @Override
