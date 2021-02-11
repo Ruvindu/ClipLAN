@@ -3,7 +3,7 @@ package cliplan;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class CopyContent implements Serializable {
+public class CopiedContent implements Serializable {
 
     long timestamp = new Timestamp(System.currentTimeMillis()).getTime();
     String source_device_ip;

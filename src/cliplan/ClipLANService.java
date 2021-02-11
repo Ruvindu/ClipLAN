@@ -9,13 +9,9 @@ public class ClipLANService extends UnicastRemoteObject implements ClipLAN {
     private ArrayList<String> connected_client_ips = new ArrayList<String>();
     //private int connected_client_count = 0;
     //private String copied_data = ""
-    private CopyContent copycontent;
-    
-    
+    private CopiedContent copycontent;
+
     private ClipLANDemo main_window;
-    
-    
-    
 
     public ClipLANService(ClipLANDemo main_window) throws RemoteException {
         super();
@@ -24,18 +20,12 @@ public class ClipLANService extends UnicastRemoteObject implements ClipLAN {
 
     @Override
     public boolean connect_me(String ip) {
-        //System.out.println(ip);
-        
-        for (String connected_client_ip : connected_client_ips) {
-            System.out.println("["+connected_client_ip+"]");
-        }
-
         if (!connected_client_ips.contains(ip)) {
             connected_client_ips.add(ip);
             //connected_client_count = connected_client_ips.size();
             main_window.connected_clients_label.setText(String.valueOf(connected_client_ips.size()));
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -48,12 +38,12 @@ public class ClipLANService extends UnicastRemoteObject implements ClipLAN {
     }
 
     @Override
-    public void transfer(CopyContent copycontent) {
+    public void transfer(CopiedContent copycontent) {
         this.copycontent = copycontent;
     }
 
     @Override
-public CopyContent update() throws RemoteException {
+    public CopiedContent update() throws RemoteException {
         return this.copycontent;
     }
 

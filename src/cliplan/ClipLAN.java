@@ -9,8 +9,8 @@ public interface ClipLAN extends Remote {
 
     public void disconnect_me(String ip) throws RemoteException;
 
-    public void transfer(CopyContent copycontent) throws RemoteException;
+    public void transfer(CopiedContent copycontent) throws RemoteException;
 
-    public CopyContent update() throws RemoteException;
+    public CopiedContent update() throws RemoteException;
 
 }

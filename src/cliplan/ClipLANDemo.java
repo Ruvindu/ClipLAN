@@ -10,12 +10,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -491,24 +494,75 @@ public class ClipLANDemo extends javax.swing.JFrame {
     public Client client;
     boolean server_now = false;
     static boolean client_now = false;
+    static String loopbackAddress, netAddress;
 
     Thread ipfinder = new Thread() {
+
+        private String alternative_ip() {
+            Enumeration<NetworkInterface> net_interfaces;
+            try {
+                net_interfaces = NetworkInterface.getNetworkInterfaces();
+
+                while (net_interfaces.hasMoreElements()) {
+                    NetworkInterface nextElement = net_interfaces.nextElement();
+
+                    if (nextElement.isUp()) {
+
+                        if (nextElement.isLoopback()) {
+                            nextElement.getInterfaceAddresses().iterator().forEachRemaining((t) -> {
+                                if (t.getAddress().getHostAddress().matches("^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$")) {
+                                    loopbackAddress = t.getAddress().getHostAddress();
+                                }
+                            });
+                        } else {
+                            nextElement.getInterfaceAddresses().iterator().forEachRemaining((t) -> {
+                                if (t.getAddress().getHostAddress().matches("^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$")) {
+                                    netAddress = t.getAddress().getHostAddress();
+                                }
+                            });
+                        }
+                    }
+
+                }
+
+            } catch (SocketException e) {
+
+            }
+
+            if (null != netAddress) {
+                return netAddress;
+            } else {
+                return loopbackAddress;
+            }
+        }
+
         @Override
         public void run() {
 
             try {
-                input_ip.setText(InetAddress.getLocalHost().getHostAddress());
+                String host_address = InetAddress.getLocalHost().getHostAddress();
+                if (host_address.matches("\"^((0|1\\\\d?\\\\d?|2[0-4]?\\\\d?|25[0-5]?|[3-9]\\\\d?)\\\\.){3}(0|1\\\\d?\\\\d?|2[0-4]?\\\\d?|25[0-5]?|[3-9]\\\\d?)$\"")) {
+                    input_ip.setText(host_address);
+                } else {
+                    input_ip.setText(this.alternative_ip());
+                }
             } catch (UnknownHostException ex) {
                 Logger.getLogger(ClipLANDemo.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             while (!server_now) {
                 try {
-                    server_ip.setText(InetAddress.getLocalHost().getHostAddress());
+                    String host_address = InetAddress.getLocalHost().getHostAddress();
+                    if (host_address.matches("\"^((0|1\\\\d?\\\\d?|2[0-4]?\\\\d?|25[0-5]?|[3-9]\\\\d?)\\\\.){3}(0|1\\\\d?\\\\d?|2[0-4]?\\\\d?|25[0-5]?|[3-9]\\\\d?)$\"")) {
+                        server_ip.setText(host_address);
+                    } else {
+                        server_ip.setText(this.alternative_ip());
+                    }
+
                     Thread.sleep(2500);
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(ClipLAN.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (InterruptedException ex) {
+                    Logger.getLogger(ClipLANDemo.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (UnknownHostException ex) {
                     Logger.getLogger(ClipLANDemo.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -544,8 +598,6 @@ public class ClipLANDemo extends javax.swing.JFrame {
         }
     };
 
- 
-    
 
     private void server_naviMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_server_naviMouseEntered
         server_navi.setIcon(s_active);
@@ -628,7 +680,6 @@ public class ClipLANDemo extends javax.swing.JFrame {
         try {
             InetAddress is_connecteble = InetAddress.getByName(str_ip);
             boolean reachable = is_connecteble.isReachable(1000);
-            
 
             if (!reachable) {
                 errors = "<html>" + str_ip + " : Destination host unreachable</html>";
@@ -734,15 +785,30 @@ public class ClipLANDemo extends javax.swing.JFrame {
     }//GEN-LAST:event_twitterMouseExited
 
     private void facebookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_facebookMouseClicked
-        // redirect to facebook page
+        String url_open = "https://www.facebook.com/snapruu.official";
+        try {
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url_open));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "URL could not open", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_facebookMouseClicked
 
     private void twitterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_twitterMouseClicked
-        // redirect to twitter page
+        String url_open = "https://twitter.com/RuuSnap";
+        try {
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url_open));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "URL could not open", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_twitterMouseClicked
 
     private void weblinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_weblinkMouseClicked
-        // redirect to web help page
+        String url_open = "https://www.facebook.com/snapruu.official";
+        try {
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url_open));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "URL could not open", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_weblinkMouseClicked
 
     public static void disconnect_client_when_close() {

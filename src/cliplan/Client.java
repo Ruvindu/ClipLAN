@@ -4,7 +4,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.FlavorEvent;
-import java.awt.datatransfer.FlavorListener;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
@@ -74,18 +73,15 @@ public class Client extends Thread implements Serializable {
             @Override
             public void run() {
 
-                clipboard.addFlavorListener(new FlavorListener() {
-                    @Override
-                    public void flavorsChanged(FlavorEvent e) {
-                        try {
-                            CopyContent copycontent = new CopyContent();
-                            copycontent.setSource_device_ip(my_ip);
-                            copycontent.setContent(get_from_clipboard());
-                            //ccl.transfer((String) clipboard.getData(DataFlavor.stringFlavor));
-                            ccl.transfer(copycontent);
-
-                        } catch (Exception ex) {
-                        }
+                clipboard.addFlavorListener((FlavorEvent e) -> {
+                    try {
+                        CopiedContent copycontent = new CopiedContent();
+                        copycontent.setSource_device_ip(my_ip);
+                        copycontent.setContent(get_from_clipboard());
+                        //ccl.transfer((String) clipboard.getData(DataFlavor.stringFlavor));
+                        ccl.transfer(copycontent);
+                        System.out.println(copycontent.getContent());
+                    } catch (UnsupportedFlavorException | IOException ex) {
                     }
                 });
             }
@@ -99,7 +95,7 @@ public class Client extends Thread implements Serializable {
                 while (connected) {
 
                     try {
-                        CopyContent pulled_content = ccl.update();
+                        CopiedContent pulled_content = ccl.update();
 
                         if (pulled_content != null && !pulled_content.getSource_device_ip().equals(my_ip)) {
 
