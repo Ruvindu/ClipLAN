@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -95,6 +97,7 @@ public class ClipLANDemo extends javax.swing.JFrame {
 
         jCheckBox1.setText("jCheckBox1");
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("ClipLAN");
         setResizable(false);
 
@@ -912,6 +915,16 @@ public class ClipLANDemo extends javax.swing.JFrame {
                             hideItem.setEnabled(true);
                         }
                         //main_window.setAlwaysOnTop(true);
+                    }
+                });
+                
+                //hide window if clickd close button
+                main_window.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent evt) {
+                        main_window.setVisible(false);
+                        hideItem.setEnabled(false);
+                        openItem.setEnabled(true);
                     }
                 });
 
